@@ -4,17 +4,19 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 
-function debug($data, $dump=false){
-    echo "<pre>"; 
-    if($dump){
+function debug($data, $dump = false)
+{
+    echo "<pre>";
+    if ($dump) {
         var_dump($data);
-    }else{
+    } else {
         print_r($data);
     }
-    echo "</pre>"; 
+    echo "</pre>";
 }
 
-function env($key, $default){
+function env($key, $default)
+{
     return isset($_ENV[$key]) ? $_ENV[$key] : $default;
 }
 
