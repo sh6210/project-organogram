@@ -1,7 +1,4 @@
 <?php
-session_start();
-
-use Organogram\Model;
 // Check if the user is already logged in, if yes then redirect him to welcome page
 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     header("location: welcome.php");
@@ -9,43 +6,31 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
 }
 
 // Define variables and initialize with empty values
-$username = $password = "";
-$username_err = $password_err = "";
+$username = $password = false;
+$username_err = $password_err = false;
 
 // Processing form data when form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-//    echo "<pre>";var_dump($_POST);echo "</pre>";die();
+    $username = $_POST['username'] ?? false;
+    $password = $_POST['password'] ?? false;
 
-    if (empty(trim($_POST["username"]))) {
-        $username_err = "Please enter username.";
+    $username = trim($username);
+    $password = trim($password);
+
+    $username ?: $username_err = "Please enter username.";
+    $password ?: $password_err = "Please enter your password.";
+
+    if ($username && $password) {
+
+        header("location: ");
     } else {
-        $username = trim($_POST["username"]);
-    }
 
-    // Check if password is empty
-    if (empty(trim($_POST["password"]))) {
-        $password_err = "Please enter your password.";
-    } else {
-        $password = trim($_POST["password"]);
-    }
+        echo "<pre>";
+        var_dump("OPPS!");
+        echo "</pre>";
+        die();
 
-    if($username && $password){
-        var_dump(1);
-//        echo "<pre>";var_dump("34");echo "</pre>";die();
-        
-        $model = Model::get();
-
-        var_dump(2);
-
-        echo "<pre>";var_dump($model);echo "</pre>";die();
-
-        $model->validateEmployeeInfo($username);
-//        $model->getLoggedInEmployeeInfo($username, $password, $departmentId);
-    }else {
-        
-        echo "<pre>";var_dump("OPPS!");echo "</pre>";die();
-        
     }
 }
 ?>
@@ -57,8 +42,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Login</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <style type="text/css">
-        body{ font: 14px sans-serif; }
-        .wrapper{ width: 350px; padding: 20px; }
+        body {
+            font: 14px sans-serif;
+        }
+
+        .wrapper {
+            width: 350px;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
@@ -79,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="form-group">
             <input type="submit" class="btn btn-primary" value="Login">
         </div>
-<!--        <p>Don't have an account? <a href="register.php">Sign up now</a>.</p>-->
+        <!--        <p>Don't have an account? <a href="register.php">Sign up now</a>.</p>-->
     </form>
 </div>
 </body>

@@ -31,17 +31,11 @@ class Model
      */
     public function __construct()
     {
-        
-        echo "<pre>";var_dump("233");echo "</pre>";die();
-        
         try{
             $this->_dbcon = new MySQLi(env('DB_HOST', 'localhost'), env('DB_USER', 'dbuser'), env('DB_PASSWORD', 'password'), env('DB_NAME', 'dbname'));
-
-            echo "<pre>";var_dump($this->_dbcon);echo "</pre>";die();
-
         }catch (\Exception $e) {
-            echo "died";
-            die("Connection failed: " . mysqli_connect_error());
+            echo "Connection failed: " . mysqli_connect_error();
+            die();
         }
     }
 
