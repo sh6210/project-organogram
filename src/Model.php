@@ -31,10 +31,10 @@ class Model
      */
     public function __construct()
     {
-        try{
+        try {
             $this->_dbcon = new MySQLi(env('DB_HOST', 'localhost'), env('DB_USER', 'dbuser'), env('DB_PASSWORD', 'password'), env('DB_NAME', 'dbname'));
-        }catch (\Exception $e) {
-            echo "Connection failed: " . mysqli_connect_error();
+        } catch (\Exception $e) {
+            echo "Connection failed";
             die();
         }
     }
@@ -67,43 +67,31 @@ class Model
         var_dump($result);
         echo "</pre>";
         die();
-
     }
 
-    public function validateEmployeeInfo($username)
+    public function validateEmployeeInfo($username, $password)
     {
-        $sql = "SELECT id, username, password FROM users WHERE username = ?";
-        $stmt = $this->_dbcon->prepare($sql);
-        $stmt->bind_param("s", $username);
+        $sql = "select id, email, password from employee where email = '$username'";
 
-        if ($stmt->execute()) {
-            $stmt->store_result();
+        $result = $this->query($sql);
 
-            if ($stmt->num_rows == 1) {
-                $stmt->bind_result($id, $username, $hashed_password);
-                if ($stmt->fetch()) {
-                    if (password_verify($_POST['password'], $hashed_password)) {
+        $result = $result->num_rows ? $this->fetch($result) : false;
+        $this->_dbcon->close();
 
-                        session_start();
+        if ($result) {
+            if (password_verify($password, $result['password'])) {
+                session_start();
 
-                        $_SESSION["loggedin"] = true;
-                        $_SESSION["id"] = $id;
-                        $_SESSION["username"] = $username;
+                $_SESSION["loggedin"] = true;
+                $_SESSION["id"] = $result['id'];
+                $_SESSION["username"] = $username;
 
-                        header("location: welcome.php");
-                    } else {
-                        $password_err = "The password you entered was not valid.";
-                    }
-                }
-            } else {
-                $username_err = "No account found with that username.";
+                header("Location: welcome.php");
             }
-        } else {
-            echo "Oops! Something went wrong. Please try again later.";
         }
 
-        // Close statement
-        $stmt->close();
+        $_SESSION['error'] = "Opps, login error";
+        header("Location: login.php");
     }
 
     /**
@@ -115,7 +103,7 @@ class Model
     {
         $data = $result->fetch_assoc();
         $result->free_result();
-        $this->_dbcon->close();
+//        $this->_dbcon->close();
         return $data;
     }
 
@@ -128,7 +116,7 @@ class Model
     {
         $data = $result->fetch_all(MYSQLI_ASSOC);
         $result->free_result();
-        $this->_dbcon->close();
+//        $this->_dbcon->close();
         return $data;
     }
 
