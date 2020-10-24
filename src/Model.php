@@ -144,7 +144,6 @@ SQL;
     }
 
     /**
-     * ToDo:: // do something
      * @param $employeeId
      * @param $departmentId
      * @return array|false|object
