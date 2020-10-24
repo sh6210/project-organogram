@@ -31,11 +31,11 @@ class Model
      */
     public function __construct()
     {
-        try {
-            $this->_dbcon = new MySQLi(env('DB_HOST', 'localhost'), env('DB_USER', 'dbuser'), env('DB_PASSWORD', 'password'), env('DB_NAME', 'dbname'));
-        } catch (\Exception $e) {
-            echo "Connection failed";
-            die();
+        $this->_dbcon = new MySQLi(env('DB_HOST', 'localhost'), env('DB_USER', 'dbuser'), env('DB_PASSWORD', 'password'), env('DB_NAME', 'dbname'));
+
+        if ($this->_dbcon->connect_errno) {
+            echo "Failed to connect to MySQL: {$this->_dbcon->connect_error}";
+            die;
         }
     }
 
@@ -58,12 +58,29 @@ class Model
         return $this->_dbcon->query($sql);
     }
 
-    public function validateEmployeeInfo($sql, $password)
+    /**
+     * @param $email
+     * @param $departmentId
+     * @return array|false
+     */
+    public function validateEmployeeInfo($email, $departmentId)
     {
+        $sql = <<<SQL
+                select e.id, e.name, e.email, e.password, d.title
+                from employee e 
+                inner join employee_role er on e.id = er.employee_id
+                inner join department d on er.department_id = d.id
+                where email='$email' and department_id='$departmentId'
+SQL;
+
         $result = $this->query($sql);
         return $result->num_rows ? $this->fetch($result) : false;
     }
 
+    /**
+     * @param $sql
+     * @return mixed
+     */
     public function insertEmployee($sql)
     {
         return $this->query($sql);
@@ -78,7 +95,6 @@ class Model
     {
         $data = $result->fetch_assoc();
         $result->free_result();
-//        $this->_dbcon->close();
         return $data;
     }
 
@@ -91,7 +107,6 @@ class Model
     {
         $data = $result->fetch_all(MYSQLI_ASSOC);
         $result->free_result();
-//        $this->_dbcon->close();
         return $data;
     }
 
@@ -109,7 +124,7 @@ class Model
     }
 
     /**
-     * ToDo:: // do something
+     * Getting all roles
      */
     public function roles()
     {
@@ -119,9 +134,8 @@ class Model
     }
 
     /**
-     * ToDo:: // do something
+     * Getting all departments
      */
-
     public function department()
     {
         $sql = "select id, title from department";
@@ -133,8 +147,8 @@ class Model
      * ToDo:: // do something
      * @param $employeeId
      * @param $departmentId
+     * @return array|false|object
      */
-
     public function employeeUnderMe($employeeId, $departmentId)
     {
         $sql=<<<SQL
@@ -151,7 +165,7 @@ class Model
                     join employee e2 on er2.employee_id = e2.id
                     join role r2 on er2.role_id = r2.id
                 where department_id = '$departmentId'
-            ) select * from children
+            ) select * from children  
 SQL;
 
         $result = $this->query($sql);
@@ -160,6 +174,9 @@ SQL;
 
     }
 
+    /**
+     * Closing the DB connection
+     */
     public function __destruct()
     {
         $this->_dbcon->close();

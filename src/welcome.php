@@ -1,5 +1,4 @@
 <?php
-// Initialize the session
 session_start();
 
 // Check if the user is logged in, if not then redirect him to login page
@@ -24,12 +23,13 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 </head>
 <body>
 <div class="page-header">
-    <h1>Hi, <b><?php echo htmlspecialchars($_SESSION["email"]); ?></b>. Welcome to our site.</h1>
+    <h1>Welcome, <b><?php echo htmlspecialchars($_SESSION["email"]); ?></b>.</h1>
 </div>
 <p>
+    <br>
 <?php if(isset($_SESSION['info'])) echo "<h2>{$_SESSION['info']}</h2>" ?>
-<!--    <a href="reset-password.php" class="btn btn-warning">Reset Your Password</a>-->
-    <a href="logout.php" class="btn btn-danger">Sign Out of Your Account</a>
+    <br><br>
+    <a href="logout.php" class="btn btn-danger">Sign Out</a>
 </p>
 </body>
 </html>

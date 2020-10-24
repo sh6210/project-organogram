@@ -45,28 +45,29 @@ class Employee
      */
     function getEmployeeUnderMe(int $employeeId, int $departmentId)
     {
+        // Showing the descendant employees if exists
         if ($result = Model::get()->employeeUnderMe($employeeId, $departmentId)){
             echo "<pre>";
             print_r($result);
             die;
         }
 
+        // Setting key into session for showing the logged_in user info
+        // as they don't have any descendant
         $_SESSION['info'] = 'Sorry, no record found';
         header("location: welcome.php");
         exit;
     }
 
+    /**
+     * @param $email
+     * @param $password
+     * @param $departmentId
+     * @return $this
+     */
     public function validateAndShowEmployeeResult($email, $password, $departmentId)
     {
-        $sql = <<<SQL
-                select e.id, e.name, e.email, e.password, d.title
-                from employee e 
-                inner join employee_role er on e.id = er.employee_id
-                inner join department d on er.department_id = d.id
-                where email='$email' and department_id='$departmentId'
-SQL;
-
-        $result = Model::get()->validateEmployeeInfo($sql, $password);
+        $result = Model::get()->validateEmployeeInfo($email, $departmentId);
 
         session_start();
 
@@ -75,6 +76,7 @@ SQL;
             $_SESSION["id"] = $result['id'];
             $_SESSION["email"] = $email;
 
+            // Getting descendant employees for logged in user
             $this->getEmployeeUnderMe($result['id'], $departmentId);
         } else {
             $_SESSION['error'] = "Opps, login error";

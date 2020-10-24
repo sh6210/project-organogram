@@ -5,11 +5,18 @@ require '../vendor/autoload.php';
 
 class HandelLogin
 {
+    /**
+     * Redirect to the login page
+     */
     public function showLogin()
     {
         header('Location: login.php');
     }
 
+    /**
+     * Validate the $_POST entries and
+     * show the results if applicable
+     */
     public function calculateSubmission()
     {
         $email = $_POST['email'] ?? false;
@@ -29,6 +36,9 @@ class HandelLogin
         $employee->validateAndShowEmployeeResult($email, $password, $department);
     }
 
+    /**
+     * @return bool
+     */
     public function isSubmitted()
     {
         $email = $_POST['email'] ?? false;
@@ -37,6 +47,3 @@ class HandelLogin
         return $email and $password ?: false;
     }
 }
-
-$handleLogin = new HandelLogin();
-$handleLogin->isSubmitted() ? $handleLogin->calculateSubmission() : $handleLogin->showLogin();

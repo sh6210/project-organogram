@@ -4,6 +4,8 @@ use Organogram\Model;
 
 require '../vendor/autoload.php';
 
+session_start();
+
 // Check if the user is already logged in, if yes then redirect him to welcome page
 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     header("location: welcome.php");
@@ -32,22 +34,23 @@ $departments = Model::get()->department();
 </head>
 <body>
 <div class="wrapper">
-    <h2>Login <?php if(isset($_SESSION['error'])) echo $_SESSION['error'] ?></h2>
+    <span style="color: red"><?php if(isset($_SESSION['error'])) echo $_SESSION['error']; session_destroy() ?></span>
+    <h2>Login </h2>
     <p>Please fill in your credentials to login.</p>
-    <form method="post" action="HandelLogin.php">
+    <form method="post" action="/">
         <div class="form-group ">
             <label>Email</label>
-            <input type="email" name="email" class="form-control" value="">
+            <input type="email" name="email" class="form-control" value="" required>
             <span class="help-block"></span>
         </div>
         <div class="form-group ">
             <label>Password</label>
-            <input type="password" name="password" class="form-control">
+            <input type="password" name="password" class="form-control" required>
             <span class="help-block"></span>
         </div>
         <div class="form-group">
             <label for="Department">Department</label><br>
-            <select name="department" id="Department" class="form-control">
+            <select name="department" id="Department" class="form-control" required>
                 <?php foreach ($departments as $department)
                 echo "<option value='{$department['id']}'>{$department['title']}</option>"
                 ?>
