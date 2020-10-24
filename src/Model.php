@@ -58,40 +58,15 @@ class Model
         return $this->_dbcon->query($sql);
     }
 
-    public function getLoggedInEmployeeInfo(string $email, string $password, $departmentId)
+    public function validateEmployeeInfo($sql, $password)
     {
-        $sql = "select e.id from employee e where e.email = '$email' and $password = '$password'";
         $result = $this->query($sql);
-
-        echo "<pre>";
-        var_dump($result);
-        echo "</pre>";
-        die();
+        return $result->num_rows ? $this->fetch($result) : false;
     }
 
-    public function validateEmployeeInfo($username, $password)
+    public function insertEmployee($sql)
     {
-        $sql = "select id, email, password from employee where email = '$username'";
-
-        $result = $this->query($sql);
-
-        $result = $result->num_rows ? $this->fetch($result) : false;
-        $this->_dbcon->close();
-
-        if ($result) {
-            if (password_verify($password, $result['password'])) {
-                session_start();
-
-                $_SESSION["loggedin"] = true;
-                $_SESSION["id"] = $result['id'];
-                $_SESSION["username"] = $username;
-
-                header("Location: welcome.php");
-            }
-        }
-
-        $_SESSION['error'] = "Opps, login error";
-        header("Location: login.php");
+        return $this->query($sql);
     }
 
     /**
@@ -138,8 +113,9 @@ class Model
      */
     public function roles()
     {
-        // do something
-
+        $sql = "select title from role";
+        $result = $this->query($sql);
+        return $result->num_rows ? $this->fetchAll($result) : [];
     }
 
     /**
@@ -148,7 +124,9 @@ class Model
 
     public function department()
     {
-        // do something
+        $sql = "select id, title from department";
+        $result = $this->query($sql);
+        return $result->num_rows ? $this->fetchAll($result) : [];
     }
 
     /**
@@ -159,7 +137,27 @@ class Model
 
     public function employeeUnderMe($employeeId, $departmentId)
     {
-        // do something
+        $sql=<<<SQL
+                with recursive children as (
+                select e.name, er.employee_id, r.title
+                from employee_role er 
+                    inner join employee e on er.employee_id = e.id
+                    inner join role r on er.role_id = r.id
+                where parent_employee_id = '$employeeId' and department_id = '$departmentId'
+                union
+                select e2.name, er2.employee_id, r2.title
+                from children c 
+                    join employee_role er2 on er2.parent_employee_id = c.employee_id
+                    join employee e2 on er2.employee_id = e2.id
+                    join role r2 on er2.role_id = r2.id
+                where department_id = '$departmentId'
+            ) select * from children
+SQL;
+
+        $result = $this->query($sql);
+
+        return $result->num_rows ? $this->fetchAll($result) : false;
+
     }
 
     public function __destruct()

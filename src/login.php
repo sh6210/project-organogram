@@ -1,9 +1,16 @@
 <?php
+
+use Organogram\Model;
+
+require '../vendor/autoload.php';
+
 // Check if the user is already logged in, if yes then redirect him to welcome page
 if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     header("location: welcome.php");
     exit;
 }
+
+$departments = Model::get()->department();
 ?>
 
 <!DOCTYPE html>
@@ -25,12 +32,12 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
 </head>
 <body>
 <div class="wrapper">
-    <h2>Login</h2>
+    <h2>Login <?php if(isset($_SESSION['error'])) echo $_SESSION['error'] ?></h2>
     <p>Please fill in your credentials to login.</p>
     <form method="post" action="HandelLogin.php">
         <div class="form-group ">
-            <label>Username</label>
-            <input type="text" name="username" class="form-control" value="">
+            <label>Email</label>
+            <input type="email" name="email" class="form-control" value="">
             <span class="help-block"></span>
         </div>
         <div class="form-group ">
@@ -39,9 +46,16 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
             <span class="help-block"></span>
         </div>
         <div class="form-group">
+            <label for="Department">Department</label><br>
+            <select name="department" id="Department" class="form-control">
+                <?php foreach ($departments as $department)
+                echo "<option value='{$department['id']}'>{$department['title']}</option>"
+                ?>
+            </select>
+        </div>
+        <div class="form-group">
             <input type="submit" class="btn btn-primary" value="Login">
         </div>
-        <!--        <p>Don't have an account? <a href="register.php">Sign up now</a>.</p>-->
     </form>
 </div>
 </body>

@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="instalogic" uuid="55704c04-b19e-4ef7-b1ad-0e22060b0ef4">
+    <data-source source="LOCAL" name="classicmodels@localhost" uuid="8253c609-8a99-4ec4-959f-fef650e53c16">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
+      <remarks>mysqltutorial.org</remarks>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/classicmodels</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="instalogic@localhost" uuid="9a45c96d-b88d-4ecd-a839-7ee3f13b67ef">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <remarks>Instalogic</remarks>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:3306/instalogic</jdbc-url>
     </data-source>

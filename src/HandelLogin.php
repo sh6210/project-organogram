@@ -5,11 +5,6 @@ require '../vendor/autoload.php';
 
 class HandelLogin
 {
-    public function __construct()
-    {
-
-    }
-
     public function showLogin()
     {
         header('Location: login.php');
@@ -17,40 +12,31 @@ class HandelLogin
 
     public function calculateSubmission()
     {
-        $username = $_POST['username'] ?? false;
+        $email = $_POST['email'] ?? false;
         $password = $_POST['password'] ?? false;
+        $department = $_POST['department'] ?? false;
 
-        if ($username) $username = trim($username);
+        if ($email) $email = trim($email);
         if ($password) $password = trim($password);
+        if ($department) $department = trim($department);
 
-        if (!$username or !$password) {
+        if (!$email or !$password or !$department) {
             header("Location: login.php");
-        } else {
-            $model = new Model();
-            $model->validateEmployeeInfo($username, $password);
+            exit;
         }
 
-        return $this;
-    }
-
-    public function showResult()
-    {
-
+        $employee = new Employee();
+        $employee->validateAndShowEmployeeResult($email, $password, $department);
     }
 
     public function isSubmitted()
     {
-        $username = $_POST['username'] ?? false;
+        $email = $_POST['email'] ?? false;
         $password = $_POST['password'] ?? false;
 
-        return $username and $password ?: false;
+        return $email and $password ?: false;
     }
 }
 
 $handleLogin = new HandelLogin();
-
-$handleLogin->isSubmitted() ? $handleLogin->calculateSubmission()->showResult() : $handleLogin->showLogin();
-
-//$model = new Model();
-//$model->validateEmployeeInfo($username);
-//        $model->getLoggedInEmployeeInfo($username, $password, $departmentId);
+$handleLogin->isSubmitted() ? $handleLogin->calculateSubmission() : $handleLogin->showLogin();
